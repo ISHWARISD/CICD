@@ -1,0 +1,39 @@
+# This file goes at: .github/workflows/ci.yml
+# GitHub automatically detects and runs anything in .github/workflows/
+
+name: CI Pipeline
+
+# WHEN this workflow runs
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# WHAT it does
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest   # GitHub spins up a fresh Ubuntu VM for this
+
+    steps:
+      # Step 1: get the code onto that VM
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: install Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Step 3: install dependencies
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # Step 4: run the tests
+      - name: Run tests
+        run: pytest test_app.py -v
+
+      # Step 5: build the Docker image (just to prove it builds successfully)
+      - name: Build Docker image
+        run: docker build -t cicd-demo:latest .
